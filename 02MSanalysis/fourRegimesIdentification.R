@@ -78,14 +78,16 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                                     "expectedReturnR1D","expectedReturnR2D",
                                     "expectedVolR1D","expectedVolR2D",
                                     "observedReturnDT",
-                                    "AICD",
-                                    "LLF",
+                                    "Akaike2reg",
+                                    "LLF2reg",
                                     "smoothProbR2TD",
                                     "transMatS1S1",
                                     "transMatS2S1",
                                     "transMatS1S2",
                                     "transMatS2S2",
-                                    "timeEllapsed"),
+                                    "timeEllapsed",
+                                    "LLF1reg",
+                                    "Akaike2Reg"),
                         Value=c(
                           returnScenarioD,
                           volScenarioD,
@@ -97,7 +99,9 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                           modD@Fit@logLikel,
                           tail(modD@Fit@smoProb[reg2IdD[2]],1),
                           matrix(modD@transMat,4,1),
-                          as.numeric(endTime-startTime)
+                          as.numeric(endTime-startTime),
+                          as.numeric(logLik(modelo1d)),
+                          as.numeric(AIC(modelo1d))
                         ))
   objetoSalida=list(
     dbDataFrame=regimeCols,
