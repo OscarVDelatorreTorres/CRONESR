@@ -77,6 +77,7 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                                     "regimeScenarioD",
                                     "expectedReturnR1D","expectedReturnR2D",
                                     "expectedVolR1D","expectedVolR2D",
+                                    "pValueR1D","pValueR2D",
                                     "observedReturnDT",
                                     "Akaike2reg",
                                     "LLF2reg",
@@ -87,13 +88,18 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                                     "transMatS2S2",
                                     "timeEllapsed",
                                     "LLF1reg",
-                                    "Akaike2Reg"),
+                                    "Akaike2Reg",
+                                    "expectedReturn1Reg",
+                                    "expectedVol1Reg",
+                                    "pValue1Reg"),
                         Value=c(
                           returnScenarioD,
                           volScenarioD,
                           regimeScenarioD,
                           modD@Coef[reg2IdD[1],],modD@Coef[reg2IdD[2],],
                           modD@std[reg2IdD[1]],modD@std[reg2IdD[2]],
+                          (1-pt(abs(modD@Coef[reg2IdD[1],]/sqrt(modD@seCoef[reg2IdD[1],])),(nrow(Datos)-modD@k)))*2,
+                          (1-pt(abs(modD@Coef[reg2IdD[2],]/sqrt(modD@seCoef[reg2IdD[2],])),(nrow(Datos)-modD@k)))*2,
                           tail(Datos$Return,1),
                           AIC(modD),
                           modD@Fit@logLikel,
@@ -101,7 +107,10 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                           matrix(modD@transMat,4,1),
                           as.numeric(endTime-startTime),
                           as.numeric(logLik(modelo1d)),
-                          as.numeric(AIC(modelo1d))
+                          as.numeric(AIC(modelo1d)),
+                          as.numeric(modelo1d$coefficients),
+                          sqrt(sum(modelo1d$residuals^2)/modelo1d$df.residual),
+                          summary(modelo1d)$coefficients[4]
                         ))
   objetoSalida=list(
     dbDataFrame=regimeCols,
