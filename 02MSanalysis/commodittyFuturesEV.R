@@ -25,23 +25,33 @@ source("https://raw.githubusercontent.com/OscarVDelatorreTorres/CRONESR/main/02M
 
 set_app_id('617a3f4d2db44d8f859314f8b45307a9be2d33cd')
 
+
 computadora="MacProUMSNH"
 
 # Conecta a la base de datos de control:
 
 switch(computadora,
-       "MacProUMSNH"={rutaBD="/Users/oscardelatorretorres/Dropbox/01 TRABAJO/12 Software/CRONfiles/01cronBDPreciosBase/02CommodittiesFutures/"}
+       "MacProUMSNH"={
+         rutaBD="/Users/oscardelatorretorres/Dropbox/01 TRABAJO/12 Software/CRONfiles/01cronBDPreciosBase/02CommodittiesFutures/"
+         rutaBD2="/Users/oscardelatorretorres/Dropbox/01 TRABAJO/12 Software/CRONfiles/12MSSimulations/"
+       }
 )
 
 # Conexión con base de datos:
 
 DBroute=paste0(rutaBD,"commodityFutures.db")
+DBroute2=paste0(rutaBD2,"commodityFuturesMSSims.db")
+
 connIndex <- dbConnect(RSQLite::SQLite(), DBroute)  
 
-RICS=dbGetQuery(connIndex,"SELECT * FROM RIC WHERE updateCondMean=='YES'")
+connOutPut <- dbConnect(RSQLite::SQLite(), DBroute2)  
+
+RICS=dbGetQuery(connIndex,"SELECT * FROM RIC")
+RICSms=dbGetQuery(connOutPut,"SELECT * FROM RIC WHERE updateMSEM=='YES'")
+
 a=1
 
-tsData=dbGetQuery(connIndex,
+tsDataD=dbGetQuery(connIndex,
                   paste0("SELECT * FROM priceNative WHERE RIC=='",RICS$RIC[a],"'")
                   )
 tsDataD=data.frame(Date=as.Date(tsData$Date),
@@ -57,5 +67,6 @@ tsDataD=tsDataD[-1,]
 # arimaObjectD=auto.arima(tsDataD$Return,max.p=2,max.q=2,d=0,seasonal=TRUE,allowmean = TRUE,allowdrift = TRUE,trace=FALSE)
 
 pruebaDataFrame=fourRegimesIdentificacion(tsDataD)
+
 
 
