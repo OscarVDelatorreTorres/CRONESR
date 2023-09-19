@@ -38,7 +38,7 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
   # modD NA verification:
   if (is.null(modD)){
     
-    objetoSalida=NA
+    objetoSalida=NULL
    
     print(paste0("MS analysis not feasible!!!"))
     return(objetoSalida)    
