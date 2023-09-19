@@ -20,8 +20,19 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
   
   modelo1d=lm(ecuacion,data=Datos)
   startTime=Sys.time()
-  print("Estimating the two-regime MS model. Please, wait...")
-  modD=msmFit(modelo1d,k=2,sw=c(TRUE,TRUE))
+  
+  intento=1
+  print(paste0("Estimating the two-regime MS model. Please, wait... attempt:(",intento," of 4)"))
+  
+  while (intento<4){
+    modD=tryCatch(msmFit(modelo1d,k=2,sw=c(TRUE,TRUE)), error= function(e) e, NA)
+    if (is.na(modD)){
+      intento=intento+1
+    } else {
+      intento=4
+    }
+  }
+  
   endTime=Sys.time()
   
   # Identifies the column with the high volatility regime:
@@ -92,7 +103,8 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                                     "Akaike2Reg",
                                     "expectedReturn1Reg",
                                     "expectedVol1Reg",
-                                    "pValue1Reg"),
+                                    "pValue1Reg",
+                                    "fitAttempts"),
                         Value=c(
                           returnScenarioD,
                           volScenarioD,
@@ -112,7 +124,8 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
                           as.numeric(AIC(modelo1d)),
                           as.numeric(modelo1d$coefficients),
                           sqrt(sum(modelo1d$residuals^2)/modelo1d$df.residual),
-                          summary(modelo1d)$coefficients[4]
+                          summary(modelo1d)$coefficients[4],
+                          as.numeric(intento)
                         ))
   objetoSalida=list(
     dbDataFrame=regimeCols,
