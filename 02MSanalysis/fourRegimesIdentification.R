@@ -71,7 +71,7 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
   colnames(forecastProbs)=c("Date","Statistic")
   # output data table:
   
-  regimeCols=data.frame(Date=tail(Datos$Date,1),
+  regimeCols=data.frame(Date=as.character(tail(Datos$Date,1)),
                         Statistic=c("returnScenarioD",
                                     "volatilityScenarioD",
                                     "regimeScenarioD",
