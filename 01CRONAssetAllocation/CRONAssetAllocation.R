@@ -46,12 +46,27 @@ ruta=paste0(rutaBD,crones$folder[1],"/")
 
 # Extrae las variaciones porcentuales del precio muestra====
 # Ruta de BD:
-rutaBDIndices="/Users/oscardelatorretorres/Dropbox/01 TRABAJO/12 Software/CRONfiles/01cronBDPreciosBase/01stockIndexes/equityIndexes.BD"
+rutaBDIndices="/Users/oscardelatorretorres/Dropbox/01 TRABAJO/12 Software/CRONfiles/01cronBDPreciosBase/01stockIndexes/equityIndexes.db"
 connBD <- dbConnect(RSQLite::SQLite(), rutaBDIndices)
 
-RICS=c(".MXX",".MIWO00000PUS",".TRCCRBTR",".SPX",".VIX")
+preciosIndices=dbGetQuery(connBD,"SELECT * FROM indexMXN WHERE RIC=='.MXX' AND Date>='2001-02-21'")
 
-preciosIndices=
+preciosIndices=data.frame(Date=as.Date(preciosIndices$Date),
+                          IPC=preciosIndices$Close)
+
+preciosIndices$worldStocks=NA
+
+preciosIndices2=dbGetQuery(connBD,"SELECT * FROM indexMXN WHERE RIC=='.MIWO00000PUS' AND Date>='2001-02-21'")
+preciosIndices2=data.frame(Date=as.Date(preciosIndices2$Date),
+                           worldStocks=preciosIndices2$Close)
+
+for (a in 1:nrow(preciosIndices)){
+  idFila=which(preciosIndices2$Date==preciosIndices$Date[a])
+  if (length(idFila)>0){
+    preciosIndices$worldStocks[a]=preciosIndices2$worldStocks[idFila]    
+  }
+
+}
 
 rendimientosAcciones=read.xlsx("https://www.dropbox.com/scl/fi/5lfhosv8o94qv55yozkn5/rendimientosMercadoCapitales.xlsx?rlkey=jobja1g8jg5du3mpnm7f6snpc&raw=1")
 rendimientosAcciones=na.locf(rendimientosAcciones)
@@ -62,6 +77,7 @@ rendimientosAcciones$VECTPAF.MX[which(is.na(rendimientosAcciones$VECTPAF.MX))]=0
 rendimientosAcciones$VECTPAF.MX[which(is.infinite(rendimientosAcciones$VECTPAF.MX))]=0
 
 rendimientosAcciones$NAFTRACISHRS.MX=as.numeric(rendimientosAcciones$NAFTRACISHRS.MX)
+
 # Calcula los preciob B100 de los precios:
 tablaPreciosB100=data.frame(Date=rendimientosAcciones$Date,
                        rendimientosAcciones[,2:ncol(rendimientosAcciones)]+1)
@@ -179,7 +195,7 @@ for (a in 1:nrow(preciosFig1)){
   
 }
 
-if (is.na(preciosFig1$Bono  sM1a5[1])){
+if (is.na(preciosFig1$BonosM1a5[1])){
   preciosFig1$BonosM1a5[1]=preciosFig1$BonosM1a5[2]
 }
 preciosFig1$BonosM1a5=na.locf(preciosFig1$BonosM1a5)
