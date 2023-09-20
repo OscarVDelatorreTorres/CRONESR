@@ -46,6 +46,7 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
   # else modD is not Na:
   } else {
   class(modD)
+    
     # Identifies the column with the high volatility regime:
     reg2IdD=c(which(modD@std==min(modD@std)),which(modD@std==max(modD@std)))
     
