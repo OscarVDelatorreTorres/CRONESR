@@ -26,7 +26,7 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
   
   while (intento<4){
     modD=tryCatch(msmFit(modelo1d,k=2,sw=c(TRUE,TRUE)), error= function(e) e, NULL)
-    if (is.na(modD)){
+    if (is.null(modD)){
       intento=intento+1
     } else {
       intento=4
