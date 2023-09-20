@@ -22,14 +22,17 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
   startTime=Sys.time()
   
   intento=1
-  
-  while (intento<4){
+  seguir=0
+  while (seguir<1){
     print(paste0("Estimating the two-regime MS model. Please, wait... attempt:(",intento," of 4)"))    
-    modD=tryCatch(msmFit(modelo1d,k=2,sw=c(TRUE,TRUE)), error= function(e) e, NULL)
+    #modD=tryCatch(msmFit(modelo1d,k=2,sw=c(TRUE,TRUE)), error= function(e) e, NULL)
+    modD=tryCatch(msmFit(modelo1d,k=2,sw=c(TRUE,TRUE)), error= function(e) NULL)
     if (is.null(modD)){
       intento=intento+1
+      seguir=0
     } else {
       intento=4
+      seguir=1
     }
   }
    
