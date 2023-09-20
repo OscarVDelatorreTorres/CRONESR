@@ -32,7 +32,7 @@ fourRegimesIdentificacion=function(Datos,regresoras=NA){
       intento=4
     }
   }
-  
+   
   endTime=Sys.time()
   
   # modD NA verification:
