@@ -19,18 +19,20 @@ msGARCHfit=function(residuales,numberMCMC=10000,numberBurn=500,GARCHmodels=c("sG
                               "norm-tStud",
                               "norm-GED",
                               "tStud-GED",
+                              "time-Fixed",
                               "BestFitting"),
-                      DIC=rep(Inf,7),
+                      DIC=rep(Inf,8),
                       ModelID=c("c(norm,norm)",
                                   "c(std,std)",
                                   "c(ged,ged)",
                                   "c(norm,std)",
                                   "c(norm,ged)",
                                   "c(std,ged)",
+                                  "c(norm,norm)",
                                   " "),
-                      msSpec=c(paste0("MSspec", seq(1, 6)),""),
-                      msMod=c(paste0("fitedMSGARCHD", seq(1, 6)),""),
-                      GARCHSpec=rep(paste0("c('",paste(GARCHmodels,collapse="','"),"')"),7),
+                      msSpec=c(paste0("MSspec", seq(1, 7)),""),
+                      msMod=c(paste0("fitedMSGARCHD", seq(1, 7)),""),
+                      GARCHSpec=rep(paste0("c('",paste(GARCHmodels,collapse="','"),"')"),8),
                       Experiment=experiment)
   
 # Determines if the equation is a multifactor or a single one:
@@ -57,8 +59,14 @@ msGARCHfit=function(residuales,numberMCMC=10000,numberBurn=500,GARCHmodels=c("sG
   MSspec6=CreateSpec(variance.spec = list(model = GARCHmodels), 
                      distribution.spec = list(distribution = c("std","ged")),
                      switch.spec = list(do.mix = FALSE))     
-
-print(paste0("Estimating 2-regime ","normal","-","normal"," regime-specific LLFs MS-GARCH model"," (model 1 of 6). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
+  
+  MSspec7=CreateSpec(variance.spec = list(model = c("sARCH","sARCH")), 
+                    distribution.spec = list(distribution = c("norm","norm")),
+                    switch.spec = list(do.mix = FALSE),
+                    constraint.spec = list(fixed = list(alpha1_1 = 1e-06,
+                                                        alpha1_2 = 1e-06)))   
+  
+print(paste0("Estimating 2-regime ","normal","-","normal"," regime-specific LLFs MS-GARCH model"," (model 1 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
 
   fitedMSGARCHD1 = tryCatch(FitMCMC(spec = MSspec1, data = residuals, 
                                     ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
@@ -83,7 +91,7 @@ print(paste0("Estimating 2-regime ","normal","-","normal"," regime-specific LLFs
   
   cat("\f")  
   
-print(paste0("Estimating 2-regime ","tStud","-","tStud"," regime-specific LLFs MS-GARCH model"," (model 2 of 6). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
+print(paste0("Estimating 2-regime ","tStud","-","tStud"," regime-specific LLFs MS-GARCH model"," (model 2 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
 
   fitedMSGARCHD2 = tryCatch(FitMCMC(spec = MSspec2, data = residuals, 
                                     ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
@@ -107,7 +115,7 @@ print(paste0("Estimating 2-regime ","tStud","-","tStud"," regime-specific LLFs M
  
   cat("\f")  
   
-print(paste0("Estimating 2-regime ","GED","-","GED"," regime-specific LLFs MS-GARCH model"," (model 3 of 6). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
+print(paste0("Estimating 2-regime ","GED","-","GED"," regime-specific LLFs MS-GARCH model"," (model 3 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
 
   fitedMSGARCHD3 = tryCatch(FitMCMC(spec = MSspec3, data = residuals, 
                                     ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
@@ -132,7 +140,7 @@ print(paste0("Estimating 2-regime ","GED","-","GED"," regime-specific LLFs MS-GA
   
   cat("\f")  
   
-print(paste0("Estimating 2-regime ","normal","-","tStud"," regime-specific LLFs MS-GARCH model"," (model 4 of 6). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
+print(paste0("Estimating 2-regime ","normal","-","tStud"," regime-specific LLFs MS-GARCH model"," (model 4 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
   
   fitedMSGARCHD4 = tryCatch(FitMCMC(spec = MSspec4, data = residuals, 
                                     ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
@@ -156,7 +164,7 @@ print(paste0("Estimating 2-regime ","normal","-","tStud"," regime-specific LLFs 
   
   cat("\f")  
   
-print(paste0("Estimating 2-regime ","normal","-","GED"," regime-specific LLFs MS-GARCH model"," (model 5 of 6). (",experiment,"-",estDate,"-",GARCHmodels,")"))
+print(paste0("Estimating 2-regime ","normal","-","GED"," regime-specific LLFs MS-GARCH model"," (model 5 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))
 
   fitedMSGARCHD5 = tryCatch(FitMCMC(spec = MSspec5, data = residuals, 
                                     ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
@@ -179,7 +187,7 @@ print(paste0("Estimating 2-regime ","normal","-","GED"," regime-specific LLFs MS
   
   cat("\f")  
 
-print(paste0("Estimating 2-regime ","tStud","-","GED"," regime-specific LLFs MS-GARCH model"," (model 6 of 6). (",experiment,"-",estDate,"-",GARCHmodels,")"))      
+print(paste0("Estimating 2-regime ","tStud","-","GED"," regime-specific LLFs MS-GARCH model"," (model 6 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))      
 
   fitedMSGARCHD6 = tryCatch(FitMCMC(spec = MSspec6, data = residuals, 
                                     ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
@@ -201,19 +209,42 @@ print(paste0("Estimating 2-regime ","tStud","-","GED"," regime-specific LLFs MS-
     
   }  
   
+  print(paste0("Estimating 2-regime ","normal","-","normal"," regime-specific LLFs time-fixed model"," (model 7 of 7). (",experiment,"-",estDate,"-",GARCHmodels,")"))  
+  
+  fitedMSGARCHD7 = tryCatch(FitMCMC(spec = MSspec7, data = residuals, 
+                                    ctr=list(nburn=numberBurn,nmcmc=numberMCMC)) , 
+                            error=function(e) NULL) 
+  
+  if (!is.null(fitedMSGARCHD7)){
+    
+    dicTable$DIC[7]=summary(fitedMSGARCHD7)$DIC
+    meltedCoefsTable=melt(summary(fitedMSGARCHD1)$summary,id=c("Mean","SE"))
+    
+    DBTable=rbind(DBTable,
+                  data.frame(Date=as.character(tail(outputData$Date,1)),
+                             Value=meltedCoefsTable$value,
+                             Ticker=paste0(meltedCoefsTable$Var1,"-",meltedCoefsTable$Var2),
+                             ModelID=dicTable$Model[7],
+                             GARCHSpec=dicTable$GARCHSpec[7],
+                             Experiment=experiment
+                  )
+    )
+    
+  }
+  
   cat("\f")  
   
 print("Determining the best fitting model...") 
 
 bestModelRow=which(dicTable$DIC==min(dicTable$DIC))  
   
-dicTable$DIC[7]=dicTable$DIC[bestModelRow]
+dicTable$DIC[8]=dicTable$DIC[bestModelRow]
   
-dicTable$ModelID[7]=dicTable$ModelID[bestModelRow]  
+dicTable$ModelID[8]=dicTable$ModelID[bestModelRow]  
   
-dicTable$msSpec[7]=dicTable$msSpec[bestModelRow]
+dicTable$msSpec[8]=dicTable$msSpec[bestModelRow]
   
-dicTable$msMod[7]=dicTable$msMod[bestModelRow]
+dicTable$msMod[8]=dicTable$msMod[bestModelRow]
 
 #dicTable$Model[7]=paste0(dicTable$Model[7]," (",dicTable$Model[bestModelRow],")")
 
@@ -539,13 +570,60 @@ regime2ChartDataPrice=rbind(regime2ChartDataPrice,
                                        Ticker=paste0(dicTable$Model[6]," LLFs"))
 )
 
+# Smoothed, transtition and forecasted probabilities for model 7 (time-fixed):
+
+# Smoothed probabilites:
+Smooth.probs7 = State(fitedMSGARCHD7)$SmoothProb[,1, 1:MSspec7$K, drop = TRUE]
+
+# Transition probability matrix:
+transprob7 = summary(fitedMSGARCHD7)$post.trans.mat
+
+# Forecasted prpbabilities:
+
+Predprobs7 = rbind(Smooth.probs6[nrow(Smooth.probs7),]%*%transprob7,
+                   Smooth.probs6[nrow(Smooth.probs7),]%*%transprob7^2,
+                   Smooth.probs6[nrow(Smooth.probs7),]%*%transprob7^3,
+                   Smooth.probs6[nrow(Smooth.probs7),]%*%transprob7^4,
+                   Smooth.probs6[nrow(Smooth.probs7),]%*%transprob7^5)
+
+DBTable=rbind(DBTable,
+              data.frame(Date=as.character(tail(outputData$Date,1)),
+                         Value=c(Predprobs7[,1],Predprobs7[,2]),
+                         Ticker=c(paste0("Calm prob. forecast t+",seq(1,5)),
+                                  paste0("Crisis prob. forecast t+",seq(1,5))),
+                         ModelID=dicTable$Model[7],
+                         GARCHSpec=dicTable$GARCHSpec[7],
+                         Experiment=experiment
+              )
+)
+
+# Adding smooth probs to output data:
+
+outputData$tStudGEDSmoothProbR1=Smooth.probs6[2:nrow(Smooth.probs6),1]
+outputData$tStudGEDSmoothProbR2=Smooth.probs6[2:nrow(Smooth.probs6),2]
+
+# chart data tables update:
+regime1ChartDataPrice=rbind(regime1ChartDataPrice,
+                            data.frame(Date=Data$Date,
+                                       Value=Smooth.probs6[2:nrow(Smooth.probs6),1],
+                                       Ticker=paste0(dicTable$Model[6]," LLFs"))
+)
+
+regime2ChartDataPrice=rbind(regime2ChartDataPrice,
+                            data.frame(Date=Data$Date,
+                                       Value=Smooth.probs6[2:nrow(Smooth.probs6),2],
+                                       Ticker=paste0(dicTable$Model[6]," LLFs"))
+)
+
+# Smoothed, transtition and forecasted probabilities for best model:
+
 cat("\f")  
 
 print(paste0("Estimating regime-specific smoothed probs. ","(best fiting model)")) 
 
-msBestmodel=dicTable$msMod[7]
+msBestmodel=dicTable$msMod[8]
 
-# Smoothed, transtition and forecasted probabilities for best model:
+
 
 # Smoothed probabilites:
 eval(parse(text=paste0("Smooth.probsBest = State(",msBestmodel,")$SmoothProb[,1, 1:MSspec5$K, drop = TRUE]")))
@@ -680,6 +758,22 @@ DBTable=rbind(DBTable,
               )           
 )
 
+print(paste0("Estimating expected volatility at t (model 7, time-fixed). (",experiment,"-",estDate,"-",GARCHmodels,")"))
+
+pred6 <- predict(fitedMSGARCHD7, nahead = 5, do.return.draws = FALSE)
+
+
+DBTable=rbind(DBTable,
+              data.frame(
+                Date=as.character(tail(outputData$Date,1)),
+                Value=pred1$vol,
+                Ticker=paste0(paste0("Volatility at t+",seq(1:5))," model 7"),
+                ModelID=dicTable$Model[7],
+                GARCHSpec=dicTable$GARCHSpec[7],
+                Experiment=experiment
+              )           
+)
+
 print(paste0("Estimating expected volatility at t (Best model). (",experiment,"-",estDate,"-",GARCHmodels,")"))
 
 predBest <- predict(fitedMSGARCHDBest, nahead = 5, do.return.draws = FALSE)
@@ -690,8 +784,8 @@ DBTable=rbind(DBTable,
                 Date=as.character(tail(outputData$Date,1)),
                 Value=predBest$vol,
                 Ticker=paste0(paste0("Volatility at t+",seq(1:5))," Best model"),
-                ModelID=dicTable$Model[7],
-                GARCHSpec=dicTable$GARCHSpec[7],
+                ModelID=dicTable$Model[8],
+                GARCHSpec=dicTable$GARCHSpec[8],
                 Experiment=experiment
               )           
 )
