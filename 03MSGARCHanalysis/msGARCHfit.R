@@ -1,13 +1,81 @@
 
 
-msGARCHfit=function(residuales,numberMCMC=10000,numberBurn=500,GARCHmodels=c("sGARCH","sGARCH"),experiment="",estDate=Sys.Date()){
-  
-  
+msGARCHfit=function(eq,Data,numberMCMC=10000,numberBurn=500,GARCHmodels=c("sGARCH","sGARCH"),experiment="",estDate=Sys.Date()){
+
   
   
   outputData=Data
   
-# Starts calculation time:  
+  # Starts calculation time:  
+  startCalculation=Sys.time()
+  
+  words <- strsplit(eq, "[^[:alnum:]]+") # Split the string using non-alphanumeric characters as separators
+  words = words[[1]]
+  words=words[-1]
+  num_words <- length(words)
+  
+  variables=c("(Intercept)",words)
+  variablesValues=rep(0,num_words)
+  
+  # Fit the full model 
+  full.model <- lm(eq, data = Data)
+  # Stepwise regression model
+  step.model <- stepAIC(full.model, direction = "both", trace = FALSE)
+  
+  coeficientesStepWise=summary(step.model)$coefficients
+  
+  num_VarsStep=nrow(coeficientesStepWise)
+  name_VarsStep=rownames(coeficientesStepWise)
+  
+  
+  DBTable=data.frame(
+    Date=as.character(tail(outputData$Date,1)),
+    Value=rep(0,length(variables)),
+    Ticker=variables,
+    ModelID="factor model coefs",
+    GARCHSpec="factor model coefs",
+    Experiment=experiment
+  )
+  
+  for (numVar in 1:nrow(DBTable)){
+    
+    idCoefRow=which(name_VarsStep[numVar]==DBTable$Ticker)
+    if (length(idCoefRow)>0){
+      DBTable$Value[idCoefRow]=coeficientesStepWise[numVar] 
+    }
+    
+  }  
+  
+  DBTable=rbind(DBTable,
+                data.frame(
+                  Date=as.character(tail(outputData$Date,1)),
+                  Value=tail(datos$Settle,1),
+                  Ticker="Price at t",
+                  ModelID="Price at t",
+                  GARCHSpec="Price at t",
+                  Experiment=experiment
+                ),
+                data.frame(
+                  Date=as.character(tail(outputData$Date,1)),
+                  Value=tail(datos$Return,1),
+                  Ticker="Return at t",
+                  ModelID="Return at t",
+                  GARCHSpec="Return at t",
+                  Experiment=experiment
+                ),
+                data.frame(
+                  Date=as.character(tail(outputData$Date,1)),
+                  Value=tail(step.model$fitted.values,1),
+                  Ticker="Return Forecast at t",
+                  ModelID="Return Forecast at t",
+                  GARCHSpec="Return Forecast at t",
+                  Experiment=experiment
+                )                   
+  )
+  # Extract the residuals from the model:
+  residuals=step.model$residuals
+  
+  # Starts calculation time:  
   startCalculation=Sys.time()
   
   # Creating the DIC table:
