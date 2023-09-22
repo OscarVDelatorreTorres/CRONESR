@@ -1,19 +1,3 @@
-#' @title Función msMCMCGARCHFit
-#' @description
-#' This function uses the Ardia et al. (2009) MSGARCH library to estimate Markov-switching GARCH models. This specific funciont generates a data frame that you can store in a data base for simulation purposes.
-#' @param eq You can determine the type of conditional mean equation to be used, given a least squares lm() function estimation. If you have no regressors in your mean equation, you can use eq=[the variable name in data frame]~1.
-#' @param Data Is the data.frame object with the input X and Y time series.
-#' @param numberMCMC Is the number of Markov-chain Monte Carlo paths for the simulations. The default value is 10000.
-#' @param numberBurn Is the number of burned paths for MCMC calibration purposes. The default value os 500.
-#' @param GARCHmodels Is a vector object that determines the number of regimes (the length of the vector determines the number of regimes) and the GARCH model in each regime. The possible values are "sARCH" for a symmetric ARCH model, "SGARCH" (symmetric GARCH), "eGARCH" (Nelson's assymetric EGARCH model), "gjrGARCH" (the GJR-GARCH assymetric model), "tGARCH" (the assymetric t-GARCH one).
-#' @param pdfFunct Is a vector with the marginal pdf of each regime. It must have the same length as object GARCHmodels. The options are "norm", "std", "ged" for the gaussian, Student's t and GED pdfs and their skewed versions ("snorm","sstd", "sged")
-#' @param experiment Is a tittle with which your are goin to mark your experiment or estimations in your data base.
-#' @param timeFixed Is a logical input that determines if the Markov-Switching model must estimate time-fixed variances or ARCH/GARCH models. The default is FALSE. If you write TRUE the GARCHmodels object is ignored.
-#' @return A list object that includes the MSGARCH object, the data frame (dbData object) and a table with the X and Y data, dates and the regime-specific smoothed probabilities.
-#' @examples
-#' MCMCobject=msMCMCGARCHFit(eq="Y~X1+X2",Data=df,experiment="My tests")
-#' MCMCobject=msMCMCGARCHFit(eq="Y~1",Data=df,GARCHmodels=c("sGARCH","gjrGARCH","gjrGARCH"),pdfFunct=c("norm","sstd","sged"),experiment="My tests")
-#' MCMCobject=msMCMCGARCHFit(eq="Y~1",Data=df,pdfFunct=c("sstd","sged"),experiment="My tests",timeFixed=TRUE)
 
 msMCMCGARCHFit=function(eq,Data,numberMCMC=10000,numberBurn=500,GARCHmodels=c("sGARCH","sGARCH"),pdfFunct=c("norm","norm"),experiment="",timeFixed=FALSE){
   
