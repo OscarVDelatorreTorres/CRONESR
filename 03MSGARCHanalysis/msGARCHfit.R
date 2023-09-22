@@ -18,7 +18,7 @@ msGARCHfit=function(eq,Data,numberMCMC=10000,numberBurn=500,GARCHmodels=c("sGARC
   variablesValues=rep(0,num_words)
   
   # Fit the full model 
-  full.model <- lm(eq, data = Data)
+  full.model <- lm(eq, data = outputData)
   # Stepwise regression model
   step.model <- stepAIC(full.model, direction = "both", trace = FALSE)
   
